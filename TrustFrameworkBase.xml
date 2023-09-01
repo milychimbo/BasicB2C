@@ -229,6 +229,19 @@
         </Restriction>
       </ClaimType>
 
+      <ClaimType Id="emailAlternative">
+        <DisplayName>Email Address Alternative</DisplayName>
+        <DataType>string</DataType>
+        <DefaultPartnerClaimTypes>
+          <Protocol Name="OpenIdConnect" PartnerClaimType="email" />
+        </DefaultPartnerClaimTypes>
+        <UserHelpText>Email address alternative that can be used to contact you.</UserHelpText>
+        <UserInputType>TextBox</UserInputType>
+        <Restriction>
+          <Pattern RegularExpression="^[a-zA-Z0-9!#$%&amp;'+^_`{}~-]+(?:\.[a-zA-Z0-9!#$%&amp;'+^_`{}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$" HelpText="Please enter a valid email address." />
+        </Restriction>
+      </ClaimType>
+
       <ClaimType Id="otherMails">
         <DisplayName>Alternate Email Addresses</DisplayName>
         <DataType>stringCollection</DataType>
@@ -349,7 +362,7 @@
     <ClaimsTransformations>
       <ClaimsTransformation Id="CreateOtherMailsFromEmail" TransformationMethod="AddItemToStringCollection">
         <InputClaims>
-          <InputClaim ClaimTypeReferenceId="email" TransformationClaimType="item" />
+          <InputClaim ClaimTypeReferenceId="emailAlternative" TransformationClaimType="item"/>
           <InputClaim ClaimTypeReferenceId="otherMails" TransformationClaimType="collection" />
         </InputClaims>
         <OutputClaims>
@@ -753,6 +766,9 @@
             <Item Key="RaiseErrorIfClaimsPrincipalAlreadyExists">true</Item>
           </Metadata>
           <IncludeInSso>false</IncludeInSso>
+          <InputClaimsTransformations>
+            <InputClaimsTransformation ReferenceId="CreateOtherMailsFromEmail"/>
+          </InputClaimsTransformations>
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" Required="true" />
           </InputClaims>
@@ -760,6 +776,7 @@
             <!-- Required claims -->
             <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="signInNames.emailAddress" />
             <PersistedClaim ClaimTypeReferenceId="email" PartnerClaimType="mail" />
+            <PersistedClaim ClaimTypeReferenceId="otherMails"/>
             <PersistedClaim ClaimTypeReferenceId="newPassword" PartnerClaimType="password" />
             <PersistedClaim ClaimTypeReferenceId="displayName" DefaultValue="unknown" />
             <PersistedClaim ClaimTypeReferenceId="passwordPolicies" DefaultValue="DisablePasswordExpiration" />
@@ -776,6 +793,7 @@
             <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="localAccountAuthentication" />
             <OutputClaim ClaimTypeReferenceId="userPrincipalName" />
             <OutputClaim ClaimTypeReferenceId="signInNames.emailAddress" />
+            <OutputClaim ClaimTypeReferenceId="otherMails" />
           </OutputClaims>
           <IncludeTechnicalProfile ReferenceId="AAD-Common" />
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
@@ -997,6 +1015,7 @@
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="objectId" />
             <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="Verified.Email" Required="true" />
+            <OutputClaim ClaimTypeReferenceId="emailAlternative"/>
             <OutputClaim ClaimTypeReferenceId="newPassword" Required="true" />
             <OutputClaim ClaimTypeReferenceId="reenterPassword" Required="true" />
             <OutputClaim ClaimTypeReferenceId="executed-SelfAsserted-Input" DefaultValue="true" />
