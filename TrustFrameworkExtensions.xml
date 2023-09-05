@@ -13,7 +13,12 @@
     <PolicyId>B2C_1A_TrustFrameworkLocalization</PolicyId>
   </BasePolicy>
  <BuildingBlocks>
-
+    <Localization Enabled="true">
+  <SupportedLanguages DefaultLanguage="es" MergeBehavior="ReplaceAll">
+    <SupportedLanguage>en</SupportedLanguage>
+    <SupportedLanguage>es</SupportedLanguage>
+  </SupportedLanguages>
+</Localization>
   </BuildingBlocks>
 
   <ClaimsProviders>
