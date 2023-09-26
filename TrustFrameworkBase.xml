@@ -59,6 +59,19 @@
         <UserHelpText>Object identifier (ID) of the user object in Azure AD.</UserHelpText>
       </ClaimType>
 
+      <ClaimType Id="responseApi">
+        <DisplayName>responseApi</DisplayName>
+        <DataType>boolean</DataType>
+        <UserHelpText />
+      </ClaimType>
+
+
+      <ClaimType Id="error">
+        <DisplayName>error</DisplayName>
+        <DataType>string</DataType>
+        <UserHelpText />
+      </ClaimType>
+
       <!-- Claims needed for local accounts. -->
       <ClaimType Id="signInName">
         <DisplayName>Sign in name</DisplayName>
@@ -354,6 +367,37 @@
     </ClaimsSchema>
 
     <ClaimsTransformations>
+    <ClaimsTransformation Id="IsResponseGood" TransformationMethod="CompareClaimToValue">
+  <InputClaims>
+    <InputClaim ClaimTypeReferenceId="error" TransformationClaimType="inputClaim1" />
+  </InputClaims>
+  <InputParameters>
+    <InputParameter Id="compareTo" DataType="string" Value="True" />
+    <InputParameter Id="operator" DataType="string" Value="not equal" />
+    <InputParameter Id="ignoreCase" DataType="string" Value="true" />
+  </InputParameters>
+  <OutputClaims>
+    <OutputClaim ClaimTypeReferenceId="responseApi" TransformationClaimType="outputClaim" />
+  </OutputClaims>
+</ClaimsTransformation>
+<!--
+      <ClaimsTransformation Id="GenerateRequestBody" TransformationMethod="GenerateJson">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="email" TransformationClaimType="customerEntity.email" />
+          <InputClaim ClaimTypeReferenceId="objectId" TransformationClaimType="customerEntity.userObjectId" />
+          <InputClaim ClaimTypeReferenceId="givenName" TransformationClaimType="customerEntity.firstName" />
+        </InputClaims>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="requestBody" TransformationClaimType="outputClaim"/>
+        </OutputClaims>
+      </ClaimsTransformation>
+      
+
+-->
+
+
+
+
       <ClaimsTransformation Id="CreateOtherMailsFromEmail" TransformationMethod="AddItemToStringCollection">
         <InputClaims>
           <InputClaim ClaimTypeReferenceId="emailAlternative" TransformationClaimType="item"/>
@@ -564,6 +608,25 @@
       <Domain>facebook.com</Domain>
       <DisplayName>Facebook</DisplayName>
       <TechnicalProfiles>
+
+        <TechnicalProfile Id="REST-ValidateUserData">
+          <DisplayName>Validate user input data</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.RestfulProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <Metadata>
+            <Item Key="ServiceUrl">https://b2cdemoapi.azurewebsites.net/api/user</Item>
+            <Item Key="AuthenticationType">None</Item>
+            <Item Key="SendClaimsIn">Body</Item>
+            <Item Key="IncludeClaimResolvingInClaimsHandling">true</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId"/>
+          </InputClaims>
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="error" PartnerClaimType="error" />
+          </OutputClaims>
+          <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop" />
+        </TechnicalProfile>
+
         <TechnicalProfile Id="Facebook-OAUTH">
           <!-- The text in the following DisplayName element is shown to the user on the claims provider 
                selection screen. -->
@@ -892,6 +955,8 @@
           <IncludeTechnicalProfile ReferenceId="AAD-Common" />
         </TechnicalProfile>
 
+       
+
         <TechnicalProfile Id="AAD-UserWritePhoneNumberUsingObjectId">
           <Metadata>
             <Item Key="Operation">Write</Item>
@@ -991,6 +1056,15 @@
     <ClaimsProvider>
       <DisplayName>Local Account</DisplayName>
       <TechnicalProfiles>
+
+         <TechnicalProfile Id="DevolverClaims">
+         <DisplayName>DevolverClaims</DisplayName>
+          <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" Required="true" />
+          </InputClaims>
+        </TechnicalProfile>
+
 		<!--NOTA001: SIGN UP CON CORREO-->
         <TechnicalProfile Id="LocalAccountSignUpWithLogonEmail">
           <DisplayName>Email signup</DisplayName>
@@ -1005,6 +1079,10 @@
           <InputClaims>
             <InputClaim ClaimTypeReferenceId="email" />
           </InputClaims>
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="error"/>
+            <PersistedClaim ClaimTypeReferenceId="responseApi"/>
+          </PersistedClaims>
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="objectId" />
             <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="Verified.Email" Required="true" />
@@ -1018,11 +1096,29 @@
             <!-- Optional claims, to be collected from the user -->
             <OutputClaim ClaimTypeReferenceId="displayName" />
             <OutputClaim ClaimTypeReferenceId="surName" />
+            <OutputClaim ClaimTypeReferenceId="error" />
           </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="IsResponseGood" />
+          </OutputClaimsTransformations>
           <ValidationTechnicalProfiles>
+            
             <ValidationTechnicalProfile ReferenceId="AAD-UserWriteUsingLogonEmail" />
+            <ValidationTechnicalProfile ReferenceId="REST-ValidateUserData" />
+
           </ValidationTechnicalProfiles>
           <UseTechnicalProfileForSessionManagement ReferenceId="SM-AAD" />
+        </TechnicalProfile>
+
+        <TechnicalProfile Id="AAD-DeleteUserUsingObjectId">
+          <Metadata>
+            <Item Key="Operation">DeleteClaimsPrincipal</Item>
+          </Metadata>
+          <InputClaims>
+            <InputClaim ClaimTypeReferenceId="objectId" Required="true" />
+          </InputClaims>
+          <OutputClaims />
+          <IncludeTechnicalProfile ReferenceId="AAD-Common" />
         </TechnicalProfile>
 
         <!-- This technical profile uses a validation technical profile to authenticate the user. -->
@@ -1348,7 +1444,43 @@
           </ClaimsExchanges>
         </OrchestrationStep>
 
+        <OrchestrationStep Order="3" Type="ClaimsExchange">
+        <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>responseApi</Value>
+              <Value>True</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AAD-DeleteUserUsingObjectId" TechnicalProfileReferenceId="AAD-DeleteUserUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        
+
+       
+
         <!-- For social IDP authentication, attempt to find the user account in the directory. 
+         <OrchestrationStep Order="3" Type="ClaimsExchange">
+        <Preconditions>
+            <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
+              <Value>errorApi</Value>
+              <Value>False</Value>
+              <Action>SkipThisOrchestrationStep</Action>
+            </Precondition>
+          </Preconditions>
+          <ClaimsExchanges>
+            <ClaimsExchange Id="AAD-DeleteUserUsingObjectId" TechnicalProfileReferenceId="AAD-DeleteUserUsingObjectId" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+         
+         
+         <OrchestrationStep Order="3" Type="ClaimsExchange">
+          <ClaimsExchanges>
+            <ClaimsExchange Id="ApiExchange" TechnicalProfileReferenceId="REST-ValidateUserData" />
+          </ClaimsExchanges>
+        </OrchestrationStep>
+        
         <OrchestrationStep Order="3" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
@@ -1365,7 +1497,7 @@
         <!-- Show self-asserted page only if the directory does not have the user account already (i.e. we do not have an objectId). 
           This can only happen when authentication happened using a social IDP. If local account was created or authentication done
           using ESTS in step 2, then an user account must exist in the directory by this time. -->
-        <OrchestrationStep Order="3" Type="ClaimsExchange">
+        <OrchestrationStep Order="4" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimsExist" ExecuteActionsIf="true">
               <Value>objectId</Value>
@@ -1379,7 +1511,7 @@
 
         <!-- This step reads any user attributes that we may not have received when authenticating using ESTS so they can be sent 
           in the token. -->
-        <OrchestrationStep Order="4" Type="ClaimsExchange">
+        <OrchestrationStep Order="5" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">
               <Value>authenticationSource</Value>
@@ -1435,7 +1567,7 @@
             <ClaimsExchange Id="AADUserWriteWithObjectId" TechnicalProfileReferenceId="AAD-UserWritePhoneNumberUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>-->
-        <OrchestrationStep Order="5" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
+        <OrchestrationStep Order="6" Type="SendClaims" CpimIssuerTechnicalProfileReferenceId="JwtIssuer" />
 
       </OrchestrationSteps>
       <ClientDefinition ReferenceId="DefaultWeb" />
