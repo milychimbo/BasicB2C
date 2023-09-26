@@ -165,10 +165,10 @@
           <LocalizedString ElementType="ClaimType" ElementId="reenterPassword" StringId="DisplayName">Confirm New Password</LocalizedString>
           <LocalizedString ElementType="ClaimType" ElementId="reenterPassword" StringId="UserHelpText">Confirm new password</LocalizedString>
           <LocalizedString ElementType="ClaimType" ElementId="reenterPassword" StringId="PatternHelpText">8-16 characters, containing 3 out of 4 of the following: Lowercase characters, uppercase characters, digits (0-9), and one or more of the following symbols: @ # $ % ^ &amp; * - _ + = [ ] { } | \ : ' , ? / ` ~ " ( ) ; .</LocalizedString>
-          <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="DisplayName">Display Name</LocalizedString>
-          <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="UserHelpText">Your display name.</LocalizedString>
-          <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="DisplayName">Surname</LocalizedString>
-          <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="UserHelpText">Your surname (also known as family name or last name).</LocalizedString>
+          <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="DisplayName">Name(s)</LocalizedString>
+          <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="UserHelpText">Your first and second name (optional).</LocalizedString>
+          <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="DisplayName">First Surname</LocalizedString>
+          <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="UserHelpText">Your first surname (also known as family name or last name).</LocalizedString>
           <LocalizedString ElementType="ClaimType" ElementId="givenName" StringId="DisplayName">Given Name</LocalizedString>
           <LocalizedString ElementType="ClaimType" ElementId="givenName" StringId="UserHelpText">Your given name (also known as first name).</LocalizedString>
           <LocalizedString ElementType="UxElement" StringId="button_continue">Create</LocalizedString>
@@ -218,10 +218,10 @@
         <LocalizedString ElementType="ClaimType" ElementId="reenterPassword" StringId="DisplayName">Confirmar Nueva Contraseña</LocalizedString>
         <LocalizedString ElementType="ClaimType" ElementId="reenterPassword" StringId="UserHelpText">Confirma la nueva contraseña</LocalizedString>
         <LocalizedString ElementType="ClaimType" ElementId="reenterPassword" StringId="PatternHelpText">8-16 caracteres, que contengan 3 de los siguientes elementos: letras minúsculas, letras mayúsculas, dígitos (0-9) y uno o más de los siguientes símbolos: @ # $ % ^ &amp; * - _ + = [ ] { } | \ : ' , ? / ` ~ " ( ) ; .</LocalizedString>
-        <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="DisplayName">Nombre de Usuario</LocalizedString>
-        <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="UserHelpText">Tu nombre de usuario.</LocalizedString>
-        <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="DisplayName">Apellido</LocalizedString>
-        <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="UserHelpText">Tu apellido (también conocido como apellido o apellido paterno).</LocalizedString>
+        <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="DisplayName">Nombre(s)</LocalizedString>
+        <LocalizedString ElementType="ClaimType" ElementId="displayName" StringId="UserHelpText">Tu primer nombre y segundo nombre (opcional)</LocalizedString>
+        <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="DisplayName">Primer Apellido</LocalizedString>
+        <LocalizedString ElementType="ClaimType" ElementId="surname" StringId="UserHelpText">Tu primer apellido (también conocido como apellido paterno).</LocalizedString>
         <LocalizedString ElementType="ClaimType" ElementId="givenName" StringId="DisplayName">Nombre</LocalizedString>
         <LocalizedString ElementType="ClaimType" ElementId="givenName" StringId="UserHelpText">Tu nombre (también conocido como nombre de pila o primer nombre).</LocalizedString>
         <LocalizedString ElementType="UxElement" StringId="button_continue">Crear</LocalizedString>

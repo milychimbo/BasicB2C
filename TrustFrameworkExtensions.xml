@@ -23,6 +23,8 @@
 
   <ClaimsProviders>
 
+
+
     <ClaimsProvider>
       <DisplayName>Facebook</DisplayName>
       <TechnicalProfiles>

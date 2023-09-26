@@ -480,7 +480,7 @@
       <ContentDefinition Id="api.signuporsignin">
         <LoadUri>~/tenant/templates/AzureBlue/unified.cshtml</LoadUri>
         <RecoveryUri>~/common/default_page_error.html</RecoveryUri>
-        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.5</DataUri>
+        <DataUri>urn:com:microsoft:aad:b2c:elements:contract:unifiedssp:2.1.7</DataUri>
         <Metadata>
           <Item Key="DisplayName">Signin and Signup</Item>
         </Metadata>
@@ -778,7 +778,6 @@
             <PersistedClaim ClaimTypeReferenceId="Verified.strongAuthenticationPhoneNumber" PartnerClaimType="strongAuthenticationPhoneNumber" />
 
             <!-- Optional claims. -->
-            <PersistedClaim ClaimTypeReferenceId="givenName" />
             <PersistedClaim ClaimTypeReferenceId="surname" />
           </PersistedClaims>
           <OutputClaims>
@@ -992,7 +991,7 @@
     <ClaimsProvider>
       <DisplayName>Local Account</DisplayName>
       <TechnicalProfiles>
-		<!--NOTA001: SIGN IN CON CORREO-->
+		<!--NOTA001: SIGN UP CON CORREO-->
         <TechnicalProfile Id="LocalAccountSignUpWithLogonEmail">
           <DisplayName>Email signup</DisplayName>
           <Protocol Name="Proprietary" Handler="Web.TPEngine.Providers.SelfAssertedAttributeProvider, Web.TPEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
@@ -1018,7 +1017,6 @@
 
             <!-- Optional claims, to be collected from the user -->
             <OutputClaim ClaimTypeReferenceId="displayName" />
-            <OutputClaim ClaimTypeReferenceId="givenName" />
             <OutputClaim ClaimTypeReferenceId="surName" />
           </OutputClaims>
           <ValidationTechnicalProfiles>
@@ -1235,6 +1233,86 @@
     </TechnicalProfiles>
   </ClaimsProvider>
 
+  <ClaimsProvider>
+  <Domain>google.com</Domain>
+  <DisplayName>Google</DisplayName>
+  <TechnicalProfiles>
+    <TechnicalProfile Id="Google-OAUTH">
+      <DisplayName>Google</DisplayName>
+      <Protocol Name="OAuth2" />
+      <Metadata>
+        <Item Key="ProviderName">google</Item>
+        <Item Key="authorization_endpoint">https://accounts.google.com/o/oauth2/auth</Item>
+        <Item Key="AccessTokenEndpoint">https://accounts.google.com/o/oauth2/token</Item>
+        <Item Key="ClaimsEndpoint">https://www.googleapis.com/oauth2/v1/userinfo</Item>
+        <Item Key="scope">email profile</Item>
+        <Item Key="HttpBinding">POST</Item>
+        <Item Key="UsePolicyInRedirectUri">false</Item>
+        <Item Key="client_id">Your Google application ID</Item>
+      </Metadata>
+      <CryptographicKeys>
+        <Key Id="client_secret" StorageReferenceId="B2C_1A_GoogleSecret" />
+      </CryptographicKeys>
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="id" />
+        <OutputClaim ClaimTypeReferenceId="email" PartnerClaimType="email" />
+        <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="given_name" />
+        <OutputClaim ClaimTypeReferenceId="surname" PartnerClaimType="family_name" />
+        <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
+        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="google.com" />
+        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+      </OutputClaims>
+      <OutputClaimsTransformations>
+        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+      </OutputClaimsTransformations>
+      <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+    </TechnicalProfile>
+  </TechnicalProfiles>
+</ClaimsProvider>
+
+<ClaimsProvider>
+  <Domain>live.com</Domain>
+  <DisplayName>Microsoft Account</DisplayName>
+  <TechnicalProfiles>
+    <TechnicalProfile Id="MSA-MicrosoftAccount-OpenIdConnect">
+      <DisplayName>Microsoft Account</DisplayName>
+      <Protocol Name="OpenIdConnect" />
+      <Metadata>
+        <Item Key="ProviderName">https://login.live.com</Item>
+        <Item Key="METADATA">https://login.live.com/.well-known/openid-configuration</Item>
+        <Item Key="response_types">code</Item>
+        <Item Key="response_mode">form_post</Item>
+        <Item Key="scope">openid profile email</Item>
+        <Item Key="HttpBinding">POST</Item>
+        <Item Key="UsePolicyInRedirectUri">false</Item>
+        <Item Key="client_id">Your Microsoft application client ID</Item>
+      </Metadata>
+      <CryptographicKeys>
+        <Key Id="client_secret" StorageReferenceId="B2C_1A_MSASecret" />
+      </CryptographicKeys>
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="issuerUserId" PartnerClaimType="oid" />
+        <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="given_name" />
+        <OutputClaim ClaimTypeReferenceId="surName" PartnerClaimType="family_name" />
+        <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
+        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+        <OutputClaim ClaimTypeReferenceId="identityProvider" PartnerClaimType="iss" />
+        <OutputClaim ClaimTypeReferenceId="email" />
+      </OutputClaims>
+      <OutputClaimsTransformations>
+        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+      </OutputClaimsTransformations>
+      <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+    </TechnicalProfile>
+  </TechnicalProfiles>
+</ClaimsProvider>
+
   </ClaimsProviders>
 
   <UserJourneys>
@@ -1245,6 +1323,8 @@
         <OrchestrationStep Order="1" Type="CombinedSignInAndSignUp" ContentDefinitionReferenceId="api.signuporsignin">
           <ClaimsProviderSelections>
             <ClaimsProviderSelection TargetClaimsExchangeId="FacebookExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="GoogleExchange" />
+            <ClaimsProviderSelection TargetClaimsExchangeId="MicrosoftAccountExchange" />
             <ClaimsProviderSelection ValidationClaimsExchangeId="LocalAccountSigninEmailExchange" />
           </ClaimsProviderSelections>
           <ClaimsExchanges>
@@ -1262,6 +1342,8 @@
           </Preconditions>
           <ClaimsExchanges>
             <ClaimsExchange Id="FacebookExchange" TechnicalProfileReferenceId="Facebook-OAUTH" />
+            <ClaimsExchange Id="GoogleExchange" TechnicalProfileReferenceId="Google-OAUTH" />
+            <ClaimsExchange Id="MicrosoftAccountExchange" TechnicalProfileReferenceId="MSA-MicrosoftAccount-OpenIdConnect" />
             <ClaimsExchange Id="SignUpWithLogonEmailExchange" TechnicalProfileReferenceId="LocalAccountSignUpWithLogonEmail" />
           </ClaimsExchanges>
         </OrchestrationStep>
